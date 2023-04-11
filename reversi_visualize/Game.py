@@ -2,6 +2,7 @@ import pygame as pg
 import numpy as np
 import time
 import Agents as ag
+import Minimax as minimax
 BG_COLOR = (0, 128, 0) 
 BLACK_COLOR = (0, 0, 0)
 WHITE_COLOR = (255, 255, 255)
@@ -21,12 +22,15 @@ INITIAL_STATE = [[0,0,0,0,0,0,0,0],
 WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 600
 def main():
-    RANDOM_AGENT_1 = Player(ag.random_agent,"MESSI",1)
-    RANDOM_AGENT_2 = Player(ag.random_agent,"RONALDO",-1)
+    # x_player = minimax.select_move
+    # print(ag.random_agent((INITIAL_STATE), 1, 50))
+
+    RANDOM_AGENT_1 = Player(minimax.select_move,"RONALDO",1)
+    RANDOM_AGENT_2 = Player(ag.random_agent,"MESSI",-1)
     board = Board(INITIAL_STATE)
     player1 = RANDOM_AGENT_1
     player2 = RANDOM_AGENT_2
-    ### chọn AGENT MÀ MÌNH MUỐN
+    ## chọn AGENT MÀ MÌNH MUỐN
     game = Game(player1,player2,board)
     game.loop()
     
