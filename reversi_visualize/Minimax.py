@@ -250,7 +250,7 @@ class minimax():
             legal_moves = self.get_valid_moves(board, 1)
             for move in legal_moves:
                 new_board = self.make_move(board, move[0], move[1], -1)
-                move_val = self.minimax_value(new_board, True, 5, float("-inf"), float("inf"))
+                move_val = self.minimax_value(new_board, True, 10, float("-inf"), float("inf"))
                 if move_val > best_val:
                     best_move = move
                     best_val = move_val
