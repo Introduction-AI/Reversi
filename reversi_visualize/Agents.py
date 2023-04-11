@@ -21,8 +21,13 @@ board = [[0, 0, 0, 0, 0, 0, 0, 0],
 
 DIRECTIONS = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1,1)]
 
-class minimax(board, player = 1, remain_time = 50):
-    def is_valid_move(board, row, col, player):
+class minimax():
+    def __init__(self, board, player = 1, remain_time = 50):
+        self.board = board
+        self.player = player
+        self.remain_time = remain_time
+
+    def is_valid_move(self, board, row, col, player):
         if board[row][col] != 0:
             return False
         for i in range(-1, 2):
@@ -52,21 +57,21 @@ class minimax(board, player = 1, remain_time = 50):
                     valid_moves.append((row, col))
         return valid_moves
 
-    def Win(board, player):
+    def Win(self, board, player):
         return True if ((np.count_nonzero(board == 0) == 0 and sum(map(sum, board))*player > 0) or np.count_nonzero(board == -1) == 0) else False
 
-    def Lose(board, player):
+    def Lose(self, board, player):
         return True if ((np.count_nonzero(board == 0) == 0 and sum(map(sum, board))*player < 0) or np.count_nonzero(board == 1) == 0) else False
     
-    def Tie(board, player):
+    def Tie(self, board, player):
         return True if (np.count_nonzero(board == 0) == 0 and sum(map(sum, board))*player == 0) else False
     
-    def countDics(board, player):
+    def countDics(self, board, player):
         num = 0
         for row in board:
             num += row.count(player)
         return num
-    def make_move(board, row, col, player):
+    def make_move(self, board, row, col, player):
             new_board = [row[:] for row in board]
             new_board[row][col] = player
             
@@ -96,7 +101,7 @@ class minimax(board, player = 1, remain_time = 50):
             
             return new_board
 
-    def heuristic(board, player):
+    def heuristic(self, board, player):
         h = [
             [20, -3, 11, 8, 8, 11, -3, 20],
             [-3, -7, -4, 1, 1, -4, -7, -3],
@@ -109,8 +114,8 @@ class minimax(board, player = 1, remain_time = 50):
         ]
         X1 = [-1, -1, 0, 1, 1, 1, 0, -1]
         Y1 = [0, 1, 1, 1, 0, -1, -1, -1]
-        self, opp = 0, 0
-        self_front, opp_front = 0, 0
+        myself, opp = 0, 0
+        myself_front, opp_front = 0, 0
         f = 0
         p, c, l, m, f, d = 0, 0, 0, 0, 0, 0
 
@@ -119,7 +124,7 @@ class minimax(board, player = 1, remain_time = 50):
             for x in range(8):
                 if board[y][x] == player:
                     d += h[y][x]*player
-                    if player > 0: self +=1 
+                    if player > 0: myself +=1 
                     else: opp +=1
 
                 if board[y][x] == '0':
@@ -128,75 +133,73 @@ class minimax(board, player = 1, remain_time = 50):
                         y = y + Y1[i]
 
                         if ((x >= 0) and (x < 8) and (y >=0) and (y < 8) and board[y][x] == '0'):
-                            if player > 0: self_front +=1 
+                            if player > 0: myself_front +=1 
                             else: opp_front +=1
                             break
 
-        if (self > opp): p += (100 * self)/(self + opp)
-        elif (self < opp): p += -(100 * opp)/(self + opp)
+        if (myself > opp): p += (100 * myself)/(myself + opp)
+        elif (myself < opp): p += -(100 * opp)/(myself + opp)
 
-        if(self > opp):
-            f += -(100.0 * self)/(self + opp)
-        elif(self < opp):
-            f += (100.0 * opp)/(self + opp)
+        if(myself > opp):
+            f += -(100.0 * myself)/(myself + opp)
+        elif(myself < opp):
+            f += (100.0 * opp)/(myself + opp)
 
         # Corner occupancy
-        self, opp = 0, 0
+        myself, opp = 0, 0
         if (board[0][0] == player) or \
         (board[7][0] == player) or \
         (board[0][7] == player) or \
         (board[7][7] == player):
-            if player > 0: self +=1 
+            if player > 0: myself +=1 
             else: opp +=1
-        c = 25*(self - opp)
+        c = 25*(myself - opp)
 
         # Corner closeness
-        self, opp = 0, 0
+        myself, opp = 0, 0
         if(board[0][0] == '0'):
             if (board[1][0] == player) or \
             (board[1][1] == player) or \
             (board[0][1] == player):
-                if player > 0: self +=1 
+                if player > 0: myself +=1 
                 else: opp +=1
         
         if(board[7][0] == '0'):
             if (board[6][0] == player) or \
             (board[6][1] == player) or \
             (board[7][1] == player):
-                if player > 0: self +=1 
+                if player > 0: myself +=1 
                 else: opp +=1
         
         if(board[0][7] == '0'):
             if (board[1][7] == player) or \
             (board[1][6] == player) or \
             (board[0][6] == player):
-                if player > 0: self +=1 
+                if player > 0: myself +=1 
                 else: opp +=1
             
         if(board[7][7] == '0'):
             if (board[7][6] == player) or \
             (board[6][6] == player) or \
             (board[6][7] == player):
-                if player > 0: self +=1 
+                if player > 0: myself +=1 
                 else: opp +=1
         
-        l  += -12.5*(self - opp)
+        l  += -12.5*(myself - opp)
 
         # Mobility
-        self, opp = 0, 0
-        self = len(self.get_valid_moves(board, player))
+        myself, opp = 0, 0
+        myself = len(self.get_valid_moves(board, player))
         opp = len(self.get_valid_moves(board, player*-1))
-        if (self > opp):
-            m += (100 * self)/(self + opp)
+        if (myself > opp):
+            m += (100 * myself)/(myself + opp)
         else:
-            m += -(100 * opp)/(self + opp)
+            m += -(100 * opp)/(myself + opp)
 
         score = (10 * p) + (801.724 * c) + (382.026 * l) + (78.922 * m) + (74.396 * f) + (10 * d)
 
         return score
 
-    a = heuristic(board, 1)
-    print(a)
     def minimax_value(self, board, white_turn, search_depth, alpha, beta):
         if search_depth == 0:
             return self.heuristic(board, 1)
@@ -255,6 +258,7 @@ class minimax(board, player = 1, remain_time = 50):
             return best_move
 a = minimax(board, 1, 50)
 b = a.select_moves(board, 1, 50)
+print(b)
 #minimax(board, 1, 50)
 
 def random_agent(cur_state, player_to_move, remain_time):
