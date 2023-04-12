@@ -10,7 +10,7 @@ BLACK = -1
 
 NUM_COLUMNS = 8
 
-SEARCH_DEPTH = 10
+SEARCH_DEPTH = 3
 
 class GamePhase(enum.Enum):
     EARLY_GAME = 1
@@ -137,8 +137,6 @@ class minimax():
     def Win(self, board, player):
         opponent = -1 if player == 1 else 1
         if ((self.getPlayerStoneCount(board, 0) == 0 and self.getPlayerStoneCount(board, player) > self.getPlayerStoneCount(board, opponent)) or self.getPlayerStoneCount(board, opponent) == 0): 
-            print(board)
-            print('\n')
             return True
         else: return False
 
@@ -155,36 +153,146 @@ class minimax():
         for row in board:
             num += row.count(player)
         return num
-    def make_move(self, board, row, col, player):
-            new_board = [row[:] for row in board]
-            new_board[row][col] = player
+    # def make_move(self, board, row, col, player):
+    #         new_board = [row[:] for row in board]
+    #         new_board[row][col] = player
             
-            for i in range(-1, 2):
-                for j in range(-1, 2):
-                    if i == 0 and j == 0:
-                        continue
+    #         for i in range(-1, 2):
+    #             for j in range(-1, 2):
+    #                 if i == 0 and j == 0:
+    #                     continue
                     
-                    r = row + i
-                    c = col + j
-                    flipped = False
-                    to_flip = []
+    #                 r = row + i
+    #                 c = col + j
+    #                 flipped = False
+    #                 to_flip = []
                     
-                    while r >= 0 and r < 8 and c >= 0 and c < 8:
-                        if new_board[r][c] == 0:
-                            break
-                        if new_board[r][c] == player:
-                            flipped = True
-                            break
-                        to_flip.append((r, c))
-                        r += i
-                        c += j
+    #                 while r >= 0 and r < 8 and c >= 0 and c < 8:
+    #                     if new_board[r][c] == 0:
+    #                         break
+    #                     if new_board[r][c] == player:
+    #                         flipped = True
+    #                         break
+    #                     to_flip.append((r, c))
+    #                     r += i
+    #                     c += j
                     
-                    if flipped:
-                        for (r, c) in to_flip:
-                            new_board[r][c] = player
+    #                 if flipped:
+    #                     for (r, c) in to_flip:
+    #                         new_board[r][c] = player
             
-            return new_board
+    #         return new_board
+    def make_move(self, board, move ,player):
+        newboard = [row[:] for row in board]
 
+        newboard[move[0]][move[1]] = player
+        flip = self.getReversePoints(newboard,player,move[0],move[1])
+        for point in flip:
+            newboard[point[0]][point[1]] = player
+
+        return newboard
+    def getReversePoints(self, board, player, row, col):
+        allReversePoints = []
+
+        mrow = 0 ; mcol = 0
+        opponent = -1 if player == 1 else 1
+        #move up
+        flip_list = []
+        mrow = row - 1
+        mcol = col
+        while (mrow>0 and board[mrow][mcol] == opponent):
+            flip_list.append((mrow,mcol))
+            mrow-=1
+
+        if (mrow>=0 and board[mrow][mcol] == player and len(flip_list)>0):
+            allReversePoints += flip_list
+        #move down
+        flip_list = []
+        mrow = row + 1
+        mcol = col
+        
+        while (mrow<7 and  board[mrow][mcol] == opponent):
+            flip_list.append((mrow,mcol))
+            mrow+=1
+
+        if(mrow<=7 and board[mrow][mcol] == player and len(flip_list)>0):
+            allReversePoints += flip_list
+        #move left
+        flip_list = []
+        mrow = row
+        mcol = col - 1
+        while (mcol>0 and board[mrow][mcol] == opponent):
+            flip_list.append((mrow,mcol))
+            mcol-=1
+
+        if(mcol>=0 and board[mrow][mcol] == player and len(flip_list)>0):
+            allReversePoints += flip_list
+        
+
+        #move right
+        flip_list = []
+        mrow = row
+        mcol = col + 1
+        while(mcol<7 and board[mrow][mcol] == opponent):
+            flip_list.append((mrow,mcol))
+            mcol+=1
+        
+        if(mcol<=7 and board[mrow][mcol] == player and len(flip_list)>0):
+            allReversePoints += flip_list
+        
+
+        #move up left
+        flip_list = []
+        mrow = row - 1
+        mcol = col - 1
+        while(mrow>0 and mcol>0 and board[mrow][mcol] == opponent):
+            flip_list.append((mrow,mcol))
+            mrow-=1
+            mcol-=1
+        
+        if(mrow>=0 and mcol>=0 and board[mrow][mcol] == player and len(flip_list)>0):
+            allReversePoints += flip_list
+        
+
+        #move up right
+        flip_list = []
+        mrow = row - 1
+        mcol = col + 1
+        while(mrow>0 and mcol<7 and board[mrow][mcol] == opponent):
+            flip_list.append((mrow,mcol))
+            mrow-=1
+            mcol+=1
+        
+        if(mrow>=0 and mcol<=7 and board[mrow][mcol] == player and len(flip_list)>0):
+            allReversePoints += flip_list
+        
+
+        #move down left
+        flip_list = []
+        mrow = row + 1
+        mcol = col - 1
+        while(mrow<7 and mcol>0 and board[mrow][mcol] == opponent):
+            flip_list.append((mrow,mcol))
+            mrow+=1
+            mcol-=1
+        
+        if(mrow<=7 and mcol>=0 and board[mrow][mcol] == player and len(flip_list)>0):
+            allReversePoints += flip_list
+
+        #move down right
+        flip_list = []
+        mrow = row + 1
+        mcol = col + 1
+        while(mrow<7 and mcol<7 and board[mrow][mcol] == opponent):
+            flip_list.append((mrow,mcol))
+            mrow+=1
+            mcol+=1
+        
+        if(mrow<=7 and mcol<=7 and board[mrow][mcol] == player and len(flip_list)>0):
+            allReversePoints += flip_list
+
+        return allReversePoints;
+    
     # def heuristic(self, board, player):
     #     h = [
     #         [20, -3, 11, 8, 8, 11, -3, 20],
@@ -339,30 +447,33 @@ class minimax():
             return self.minimax_value(node, player, not player_turn, search_depth-1 ,alpha,beta)
         score = 0
         if(player_turn == True):
-            score = -sys.maxsize
+            score = -100000
             for move in self.get_valid_moves(node,player):
-                newNode = self.make_move(node, move[0], move[1], player)
+                newNode = self.make_move(node, move, player)
                 childScore = self.minimax_value(newNode, player, not player_turn, search_depth-1, alpha,beta)
+                if (childScore == None): childScore = 0
                 if(childScore > score): score = childScore
                 if(score > alpha): alpha = score
                 if(beta <= alpha): break
         else:
-            score = sys.maxsize
+            score = 100000
             for move in self.get_valid_moves(node,opponent):
-                newNode = self.make_move(node, move[0], move[1], opponent)
+                newNode = self.make_move(node, move, opponent)
                 childScore = self.minimax_value(newNode, player, player_turn, search_depth-1, alpha,beta)
+                if (childScore == None): childScore = 0
                 if(childScore < score): score = childScore
                 if(score < beta): beta = score
                 if(beta <= alpha): break
         return score
     def select_moves(self, board, player, remain_time):
+
         global nodesExplored
         nodesExplored = 0
-        bestScore = -sys.maxsize
+        bestScore = -100000
         bestMove = None
         for move in self.get_valid_moves(board,player):
-            newNode = self.make_move(board, move[0], move[1], player)
-            childScore = self.minimax_value(newNode,player, True, SEARCH_DEPTH - 1, -sys.maxsize, sys.maxsize)
+            newNode = self.make_move(board, move, player)
+            childScore = self.minimax_value(newNode,player, True, SEARCH_DEPTH, -100000, 100000)
             if(childScore > bestScore):
                 bestScore = childScore
                 bestMove = move
