@@ -22,14 +22,20 @@ INITIAL_STATE = [[0,0,0,0,0,0,0,0],
 WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 600
 def main():
-    # x_player = minimax.select_move
-    # print(ag.random_agent((INITIAL_STATE), 1, 50))
+    self = input("Nhap 1 neu di truoc, 2 neu di sau: ")
+    PLAYER_1, PLAYER_2 = None, None
+    # Mình quân trắng đi trước
+    if self == "1":
+        PLAYER_1 = Player(minimax.select_move,"SELF", 1)
+        PLAYER_2 = Player(ag.random_agent,"OPPONENT", -1)
+    # Mình quân đen đi sau
+    elif self == "2":
+        PLAYER_1 = Player(ag.random_agent,"OPPONENT",1)
+        PLAYER_2 = Player(minimax.select_move,"SELF", -1)
 
-    RANDOM_AGENT_1 = Player(ag.random_agent,"MESSI",1)
-    RANDOM_AGENT_2 = Player(minimax.select_move,"RONALDO", -1)
     board = Board(INITIAL_STATE)
-    player1 = RANDOM_AGENT_1
-    player2 = RANDOM_AGENT_2
+    player1 = PLAYER_1
+    player2 = PLAYER_2
     ## chọn AGENT MÀ MÌNH MUỐN
     game = Game(player1,player2,board)
     game.loop()
