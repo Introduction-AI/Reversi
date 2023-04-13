@@ -25,8 +25,8 @@ def main():
     # x_player = minimax.select_move
     # print(ag.random_agent((INITIAL_STATE), 1, 50))
 
-    RANDOM_AGENT_1 = Player(minimax.select_move,"RONALDO",1)
-    RANDOM_AGENT_2 = Player(ag.random_agent,"MESSI",-1)
+    RANDOM_AGENT_1 = Player(ag.random_agent,"MESSI",1)
+    RANDOM_AGENT_2 = Player(minimax.select_move,"RONALDO", -1)
     board = Board(INITIAL_STATE)
     player1 = RANDOM_AGENT_1
     player2 = RANDOM_AGENT_2

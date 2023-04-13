@@ -474,6 +474,7 @@ class minimax():
         for move in self.get_valid_moves(board,player):
             newNode = self.make_move(board, move, player)
             childScore = self.minimax_value(newNode,player, True, SEARCH_DEPTH, -100000, 100000)
+            if (childScore == None): break
             if(childScore > bestScore):
                 bestScore = childScore
                 bestMove = move
