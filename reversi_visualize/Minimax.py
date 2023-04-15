@@ -3,6 +3,7 @@ import numpy as np
 import sys
 import copy
 import enum
+import time
 
 WHITE = 1
 NOBODY = 0
@@ -194,7 +195,8 @@ class minimax():
     def getReversePoints(self, board, player, row, col):
         allReversePoints = []
 
-        mrow = 0 ; mcol = 0
+        mrow = 0  
+        mcol = 0
         opponent = -1 if player == 1 else 1
         #move up
         flip_list = []
@@ -291,7 +293,7 @@ class minimax():
         if(mrow<=7 and mcol<=7 and board[mrow][mcol] == player and len(flip_list)>0):
             allReversePoints += flip_list
 
-        return allReversePoints;
+        return allReversePoints
     
     # def heuristic(self, board, player):
     #     h = [
@@ -466,12 +468,15 @@ class minimax():
                 if(beta <= alpha): break
         return score
     def select_moves(self, board, player, remain_time):
-
         global nodesExplored
         nodesExplored = 0
         bestScore = -100000
         bestMove = None
+        start_time = time.perf_counter()
         for move in self.get_valid_moves(board,player):
+            elapsed_time = time.perf_counter() - start_time
+            if elapsed_time > 2.9:
+                break
             newNode = self.make_move(board, move, player)
             childScore = self.minimax_value(newNode,player, True, SEARCH_DEPTH, -100000, 100000)
             if (childScore == None): break
