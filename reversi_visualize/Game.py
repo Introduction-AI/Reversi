@@ -171,7 +171,6 @@ class Player:
     def move(self, board_state):
         start_time = time.perf_counter()
         ans = self.agent(board_state, self.turn, self.time)
-        print("moves: ", ans)
         elapsed_time = time.perf_counter() - start_time
         if elapsed_time > LIMIT_TIME:
             return -1
@@ -382,8 +381,8 @@ class Game:
                 if (self.is_manual_mode):
                     if (self.manual_player == ManualPlayer.PLAYER_1):
                         valid_moves = self.board.get_valid_moves(self.board.board_state, turn)
-                        print("Valid moves 1: ", valid_moves)
                         self.board.highlight_valid_moves(self.screen, valid_moves)
+                        print("Valid moves 1: ", valid_moves)
 
                 move = self.player1.move(self.board.board_state)
                 if move == -1:
@@ -399,6 +398,7 @@ class Game:
                 if (self.is_manual_mode):
                     if (self.manual_player == ManualPlayer.PLAYER_2):
                         valid_moves =  self.board.get_valid_moves(self.board.board_state, turn)
+                        self.board.highlight_valid_moves(self.screen, valid_moves)
                         print("Valid moves 2: ", valid_moves)
 
                 move = self.player2.move(self.board.board_state)
