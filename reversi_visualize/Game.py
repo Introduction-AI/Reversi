@@ -6,10 +6,11 @@ import Minimax as minimax
 from enum import Enum
 
 
-BG_COLOR = (0, 128, 0)
+BG_COLOR = (255, 221, 192)
 BLACK_COLOR = (0, 0, 0)
 WHITE_COLOR = (255, 255, 255)
 RED_COLOR = (255, 0, 0)
+GREEN_COLOR = (59,  163, 6)
 BOARD_SIZE = 8
 DELAY_TIME = 6
 TOTAL_TIME = 60
@@ -28,6 +29,8 @@ WINDOW_HEIGHT = 600
 
 FONT_SIZE = 32
 
+MARGIN = 50
+CELL_SIZE = 60
 
 class ManualPlayer(Enum):
     NO_PLAYER = 0
@@ -61,50 +64,51 @@ class Board:
 
     def draw_board(self, surface):
         surface.fill(BG_COLOR)
+
         for i in range(1, BOARD_SIZE):
-            x = i * 60
+            x = i * CELL_SIZE
             pg.draw.line(surface, BLACK_COLOR, (x, 0), (x, 480), 2)
             pg.draw.line(surface, BLACK_COLOR, (0, x), (480, x), 2)
         for row in range(BOARD_SIZE):
             for col in range(BOARD_SIZE):
                 if self.board_state[row][col] == 1:
                     pg.draw.circle(surface, WHITE_COLOR,
-                                   (col * 60 + 30, row * 60 + 30), 25)
+                                   (col * CELL_SIZE + 30, row * CELL_SIZE + 30), 25)
                 elif self.board_state[row][col] == -1:
                     pg.draw.circle(surface, BLACK_COLOR,
-                                   (col * 60 + 30, row * 60 + 30), 25)
+                                   (col * CELL_SIZE + 30, row * CELL_SIZE + 30), 25)
+    
+    def is_valid_move(self, board, row, col, turn):
+        if board[row][col] != 0:
+            return False
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if i == 0 and j == 0:
+                    continue
+                r = row + i
+                c = col + j
+                found_opponent = False
+                while r >= 0 and r < 8 and c >= 0 and c < 8:
+                    if board[r][c] == 0:
+                        break
+                    if board[r][c] == turn:
+                        if found_opponent:
+                            return True
+                        break
+                    found_opponent = True
+                    r += i
+                    c += j
+        return False
+
+    def get_valid_moves(self, board, turn):
+        valid_moves = []
+        for row in range(8):
+            for col in range(8):
+                if self.is_valid_move(board, row, col, turn):
+                    valid_moves.append((row, col))
+        return valid_moves
 
     def update_board(self, position, player):
-        def is_valid_move(board, row, col, turn):
-            if board[row][col] != 0:
-                return False
-            for i in range(-1, 2):
-                for j in range(-1, 2):
-                    if i == 0 and j == 0:
-                        continue
-                    r = row + i
-                    c = col + j
-                    found_opponent = False
-                    while r >= 0 and r < 8 and c >= 0 and c < 8:
-                        if board[r][c] == 0:
-                            break
-                        if board[r][c] == turn:
-                            if found_opponent:
-                                return True
-                            break
-                        found_opponent = True
-                        r += i
-                        c += j
-            return False
-
-        def get_valid_moves(board, turn):
-            valid_moves = []
-            for row in range(8):
-                for col in range(8):
-                    if is_valid_move(board, row, col, turn):
-                        valid_moves.append((row, col))
-            return valid_moves
-
         def make_move(board, row, col, turn):
             new_board = [row[:] for row in board]
 
@@ -135,7 +139,7 @@ class Board:
                             new_board[r][c] = turn
 
             return new_board
-        valid_move = get_valid_moves(self.board_state, player)
+        valid_move = self.get_valid_moves(self.board_state, player)
         if valid_move == []:
             valid_move.append(None)
         if position not in valid_move:
@@ -148,7 +152,13 @@ class Board:
 
     def get_board(self):
         return self.board_state
-
+    
+    # highlights valid moves
+    def highlight_valid_moves(self, surface, valid_moves):
+        for move in valid_moves:
+            row, col = move
+            pg.draw.circle(surface, GREEN_COLOR, (col * 60 + 30, row * 60 + 30), 25, 5)
+            pg.display.flip()
 
 class Player:
     def __init__(self, agent, name, turn) -> None:
@@ -369,10 +379,11 @@ class Game:
                 if event.type == pg.QUIT:
                     looping = False
             if turn == 1:
-                # if (self.is_manual_mode):
-                #     if (self.manual_player == ManualPlayer.PLAYER_1 and self.player1.get_valid_moves()):
-                #         valid_moves = self.player1.get_valid_moves()
-                #         print("Valid moves 1: ", valid_moves)
+                if (self.is_manual_mode):
+                    if (self.manual_player == ManualPlayer.PLAYER_1):
+                        valid_moves = self.board.get_valid_moves(self.board.board_state, turn)
+                        print("Valid moves 1: ", valid_moves)
+                        self.board.highlight_valid_moves(self.screen, valid_moves)
 
                 move = self.player1.move(self.board.board_state)
                 if move == -1:
@@ -385,10 +396,10 @@ class Game:
                     time.sleep(DELAY_TIME)
                     break
             else:
-                # if (self.is_manual_mode):
-                #     if (self.manual_player == ManualPlayer.PLAYER_2 and self.player2.get_valid_moves()):
-                #         valid_moves = self.player2.get_valid_moves()
-                #         print("Valid moves 2: ", valid_moves)
+                if (self.is_manual_mode):
+                    if (self.manual_player == ManualPlayer.PLAYER_2):
+                        valid_moves =  self.board.get_valid_moves(self.board.board_state, turn)
+                        print("Valid moves 2: ", valid_moves)
 
                 move = self.player2.move(self.board.board_state)
                 if move == -1:

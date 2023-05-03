@@ -59,7 +59,6 @@ class Agents:
     def random_agent(self, cur_state, player_to_move, remain_time):
         
         valid_moves = self.get_valid_moves(cur_state,player_to_move)
-        print("Valid moves: ", valid_moves)
         if valid_moves == []: return None
         else: return rd.choice(valid_moves)
 
@@ -70,7 +69,6 @@ class Agents:
             for event in pg.event.get():
                 if event.type == pg.MOUSEBUTTONDOWN:
                     x, y = pg.mouse.get_pos()
-                    print("x, y: ", x, y)
                     row = y // CELL_SIZE
                     col = x // CELL_SIZE
                     print("row, col: ", row, col)
