@@ -1,0 +1,11 @@
+SELF win
+ 
+SELF lose due to invalid move
+OPPONENT win
+ 
+SELF lose due to invalid move
+OPPONENT win
+ 
+SELF lose due to out of time
+OPPONENT win
+ 
